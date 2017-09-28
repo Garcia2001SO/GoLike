@@ -1,5 +1,5 @@
 //var game = new Phaser.Game(700, 700, Phaser.AUTO, null, 'gameDiv');
-var game = new Phaser.Game(700, 700, Phaser.AUTO, 'gameDiv', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(608, 608, Phaser.AUTO, 'gameDiv', { preload: preload, create: create, update: update });
 
 "use strict";
 
@@ -11,7 +11,7 @@ var layer;
 var marker;
 var currentTile;
 var turn;
-var turnCounter = 0; //is this useful?
+var turnCounter = 0;
 var startImg;
 var enterKey;
 
@@ -133,81 +133,60 @@ function turns(){
             selectedTile = p1TilePiece;
             console.log("2!!!");
         }
-    turnCounter++;
+    turnCounterAdder();
 }
 
 function turnCounterAdder(){
         turnCounter++;
-        console.log(turnCounter);
+        console.log('Turn: ' + turnCounter);
 }
 
-//for single tiles
 function changeTile(){
     var xx = layer.getTileX(marker.x);    //position x of the cursor
     var yy = layer.getTileY(marker.y);    //position y of the cursor
-//    var areaX = xx - 1;     //leftmost position of the territory
-//    var areaY = yy - 1;     //upmost position of the territory
-//    var width = 3;
-//    var height = 3;
-    
-//    //in case the x or y are less than 0
-//    if(areaX<0){
-//        ++areaX;
-//        --width;
-//    }
-//    if(areaY<0){
-//        ++areaY;
-//        --height;
-//    }
-//    
-//    //in case the rightmost or lower part is cut
-//    width = (xx === 18) ? --width : width;
-//    height = (yy === 18) ? --height : height;
     
     if(xx <= 18 && yy <= 18){
         pieces.push([xx, yy, selectedTileTerritory, turnCounter]);
         console.log(pieces);
         
-//        map.fill(selectedTileTerritory, areaX, areaY, width, height);
         map.putTile(selectedTile+1, xx, yy);
-        turns();
+        //turns();
     }
 }
 
 //growing the area
 function growArea(){
+    turnCounterAdder();
+    
     //[positionX, positionY, color, turn]
     function calc(positionX, positionY, color, turn){
         var time = turnCounter - turn;
-        var width; //width and height might have to stop at different values
+        var width = time*2 + 1; //width and height might have to stop at different values
         var height = time*2 + 1;
         var startX = positionX - time;
         var startY = positionY - time;
         
         //in case the start values go below 0
-        if(startX >= 1){
-            width = time*2 + 1;
-        }else{
+        if(startX < 0){
             startX = 0;
             //gotta change the width formula
-            //width = (width == NaN) ? width = 0 : width = time*2 - 1;
+            width = positionX + 1 + turnCounter;
+            
         }
         if(startY < 0){
             startY = 0;
             //gotta change the height formula
+            height = positionY + 1 + turnCounter;
         }
         
-        //in case the area(width or height) go beyond the game world
-//        why = 18 - positionX
-//        width = why*2 -1
-//        why = (width +1 )/2
-//        (width+1)/2 = 18-positionX
-//        width = 35 - positionX * 2
-//        if((width + 1)/2 > 18 - positionX) width = 35 - positionX;
-//        if((height + 1)/2 > 18 - positionY) height = 18 - positionY;
+        //in case the area goes beyond tue botton or rightmost limits
+        width = (time > 18 - positionX) ? width = 19 - startX : width = width;
+//        height = (time > 18 - positionY) ? height = time + 1 : height = height;
+        height = (time > 18 - positionY) ? height = 19 - startY : height = height;
 
-        console.log(time, width, height, startX, startY);
+        console.log('time '+time, 'width '+width, 'height '+height, 'startX '+startX, 'startY '+startY);
         map.fill(color, startX, startY, width, height);
+//        map.fill(color, 1, startY, 1, height);
         map.putTile(color + 12, positionX, positionY);
     }
 
@@ -215,11 +194,12 @@ function growArea(){
         function(element, index){
             calc.apply(this, element)
         });
-    
-    turnCounterAdder();
 }
 
-//for full map
+//Changing tiles for single tiles        
+//        map.fill(selectedTileTerritory, areaX, areaY, width, height);
+
+//Changing tiles for full map
 /*function changeTile(){
     //  This will replace every instance of tile 31 (cactus plant) with tile 46 (the sign post).
     //  It does this across the whole layer of the map unless a region is specified.
