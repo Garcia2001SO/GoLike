@@ -1,0 +1,10 @@
+Behavior description
+1.area grows every X turns (X=1 so far)
+2.it doesn't grow over the enemy's area, but pieces can be placed over it
+3.every piece has it's own area, and the area dissapears with it
+
+- 1 can be solved by deleting the corresponding index in the pieces array when the corresponding piece is destroyed
+
+Issues
+1.areas growing to the same place at the same turn UNRESOLVED
+-give priority to the closest piece to the tiles in dispute
