@@ -1,64 +1,69 @@
-//var game = new Phaser.Game(700, 700, Phaser.AUTO, null, 'gameDiv');
-var game = new Phaser.Game(608, 608, Phaser.AUTO, 'gameDiv', { preload: preload, create: create, update: update });
+//let game = new Phaser.Game(700, 700, Phaser.AUTO, null, 'gameDiv');
+let game = new Phaser.Game(608, 608, Phaser.AUTO, 'gameDiv', { preload: preload, create: create, update: update });
 
 "use strict";
 
 //------------
 //  VARIABLES
 //------------
-var map;
-var layer;
-var marker;
-var currentTile;
-var turn;
-var turnCounter = 0;
-var startImg;
-var enterKey;
+let map;
+let layer;
+let marker;
+let currentTile;
+let turn;
+let turnCounter = 0;
+let startImg;
+let enterKey;
+//Trying text
+let myText
 
 //keyboard
-var key1;
-var key2;
-var key3;
-var key4;
+let key1;
+let key2;
+let key3;
+let key4;
 
 //--------------------
 //THE ARRAY OF PIECES
 //--------------------
 //this will store 4 vales for each piece:
 //[positionX, positionY, color, turn]
-var pieces = [];
+let pieces = [];
 
 //array EVADE, coordinates of tiles that must not be changed
 //[x, y, color]
-var evade = [];
-var evadeColor = p2TileTerritory;
+// let evade = [];
+// let evadeColor = p2TileTerritory;
 
 //-----------
 //  PLAYERS
 //-----------
 //  Player1 (red)
-var p1TilePiece = 111;
-var p1TileTerritory = 99;
-var p1Territory;
-var p1Captures;
-var p1Score = p1Territory + p1Captures;
-var p1Turn = 1;
+let p1TilePiece = 111;
+let p1TileTerritory = 99;
+let p1Territory;
+let p1Captures;
+let p1Score = p1Territory + p1Captures;
+let p1Turn = 1;
 
 //  Player2 (blue)
-var p2TilePiece = 41;
-var p2TileTerritory = 29;
-var p2Territory;
-var p2Captures;
-var p2Score = p2Territory + p2Captures;
-var p2Turn = 2;
+let p2TilePiece = 41;
+let p2TileTerritory = 29;
+let p2Territory;
+let p2Captures;
+let p2Score = p2Territory + p2Captures;
+let p2Turn = 2;
 
 //More Tiles
 //tiles I want
     //red: 110, 99
     //blue: 40, 29
-var selectedTile = p1TilePiece;
-var selectedTileTerritory = p1TileTerritory;
+let selectedTile = p1TilePiece;
+let selectedTileTerritory = p1TileTerritory;
 
+//-------------------
+//  Phaser Functions
+//-------------------
 function preload() {
     game.load.tilemap('level', 'assets/map1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles', 'assets/gridtiles.png');
@@ -72,7 +77,13 @@ function create() {
     layer = map.createLayer('Layer1');
     layer.resizeWorld();
     
-    startMenu()
+//    //trying text
+//    myText = new Text(game, 800, 100, "TEXT", [fill = 'white']);
+//    myText.text = 'TEXTO';
+//    myText.text.backgroundColor='#ffffff';
+//    myText.text.fill = 'white';
+    
+    startMenu();
     
     //what was this for??
 //    currentTile = map.getTile(2, 3);
@@ -89,9 +100,15 @@ function create() {
     key2 = game.input.keyboard.addKey(50);
     key3 = game.input.keyboard.addKey(51);
     key4 = game.input.keyboard.addKey(52);
-    enterKey = game.input.keyboard.addKey(13)
+    enterKey = game.input.keyboard.addKey(13);
     
+    //Growing area
+    //1st we scan for conflicts
+    //we solve them
+    //we make the changes necessary to grow each area
+    //we paint the territory
     enterKey.onDown.add(growArea,this);
+//    enterKey.onDown.add(Scan,this);
 }
 
 function update() {
@@ -109,12 +126,12 @@ function update() {
     if(key3.isDown){
         selectedTile = p1TileTerritory;
         selectedTileTerritory = 0;
-        evadeColor = p2TileTerritory;
+        // evadeColor = p2TileTerritory;
     }
     if(key4.isDown){
         selectedTile = p2TileTerritory;
         selectedTileTerritory = 0;
-        evadeColor = p1TileTerritory;
+        // evadeColor = p1TileTerritory;
     }
 }
 
@@ -158,17 +175,17 @@ function turnCounterAdder(){
 }
 
 function changeTile(){
-    var xx = layer.getTileX(marker.x);    //position x of the cursor
-    var yy = layer.getTileY(marker.y);    //position y of the cursor
+    let x = layer.getTileX(marker.x);    //position x of the cursor
+    let y = layer.getTileY(marker.y);    //position y of the cursor
     
-    if(xx <= 18 && yy <= 18){
+    if(x <= 18 && y <= 18){
         if (selectedTileTerritory != 0){
-            pieces.push([xx, yy, selectedTileTerritory, turnCounter]);
+            pieces.push([x, y, selectedTileTerritory, turnCounter]);
             console.log(pieces);
         } else {
-            evade.push[xx, yy, evadeColor];
+            // evade.push[x, y, evadeColor];
         }
         
-        map.putTile(selectedTile, xx, yy);
+        map.putTile(selectedTile, x, y);
     }
 }
